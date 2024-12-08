@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">டெல் வி போர்ட்</string>
+    <string name="app_header">டெல் வி போர்ட்</string>
+    <string name="app_welcome">இந்திய இரயில்வேக்கு வரவேற்கிறோம்</string>
+    <string name="fab_voice_assistant">வாய்ஸ் அசிஸ்டென்ட்</string>
+    <string name="fab_change_lang">மொழி மாற்று</string>
+    <string name="tab_map">வரைபடம்</string>
+    <string name="tab_platforms">தளங்கள்</string>
+    <string name="tab_amenities">வசதிகள்</string>
+    <string name="tab_emergency">அவசரநிலை</string>
+    <string name="header_platforms">தளங்கள்</string>
+    <string name="voice_assistant">வாய்ஸ் அசிஸ்டென்ட்</string>
+    <string name="speak">பேசு</string>
+    <string name="send">அனுப்பு</string>
+    <string name="search">தேடு</string>
+    <string name="query">உங்கள் கேள்வியை கேளுங்கள்</string>
+</resources>

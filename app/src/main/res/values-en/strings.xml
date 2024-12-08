@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">TellVPort</string>
+    <string name="app_header">TELL V PORT</string>
+    <string name="app_welcome">Welcome to Indian Railways</string>
+    <string name="fab_voice_assistant">Voice Assistant</string>
+    <string name="fab_change_lang">Change Language</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_platforms">Platforms</string>
+    <string name="tab_amenities">Amenities</string>
+    <string name="tab_emergency">Emergency</string>
+    <string name="header_platforms">Platforms</string>
+    <string name="voice_assistant">Voice Assistant</string>
+    <string name="speak">Speak</string>
+    <string name="send">Send</string>
+    <string name="search">Search</string>
+    <string name="query">Ask you query</string>
+</resources>

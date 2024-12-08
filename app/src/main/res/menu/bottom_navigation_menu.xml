@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mapFragment"
+        android:enabled="true"
+        android:icon="@drawable/baseline_map_24"
+        android:title="@string/tab_map"/>
+    <item
+        android:id="@+id/platformFragment"
+        android:enabled="true"
+        android:icon="@drawable/baseline_directions_transit_24"
+        android:title="@string/tab_platforms"/>
+    <item
+        android:id="@+id/amenitiesFragment"
+        android:enabled="true"
+        android:icon="@drawable/baseline_fastfood_24"
+        android:title="@string/tab_amenities"/>
+    <item
+        android:id="@+id/emergencyFragment"
+        android:enabled="true"
+        android:icon="@drawable/baseline_health_and_safety_24"
+        android:title="@string/tab_emergency"/>
+</menu>

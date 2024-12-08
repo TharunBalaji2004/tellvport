@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mapFragment">
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.ldihackos.tellvport.views.MapFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/platformFragment"
+        android:name="com.ldihackos.tellvport.views.PlatformFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_platform" />
+
+    <fragment
+        android:id="@+id/amenitiesFragment"
+        android:name="com.ldihackos.tellvport.views.AmenitiesFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_amenities" />
+
+    <fragment
+        android:id="@+id/emergencyFragment"
+        android:name="com.ldihackos.tellvport.views.EmergencyFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_emergency" />
+
+</navigation>

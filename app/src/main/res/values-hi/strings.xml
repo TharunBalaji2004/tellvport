@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">टेलवीपोर्ट</string>
+    <string name="app_header">टेल वी पोर्ट</string>
+    <string name="app_welcome">भारतीय रेल में आपका स्वागत है</string>
+    <string name="fab_voice_assistant">वॉयस असिस्टेंट</string>
+    <string name="fab_change_lang">भाषा बदलें</string>
+    <string name="tab_map">मानचित्र</string>
+    <string name="tab_platforms">प्लेटफॉर्म्स</string>
+    <string name="tab_amenities">सुविधाएँ</string>
+    <string name="tab_emergency">आपातकालीन</string>
+    <string name="header_platforms">प्लेटफॉर्म्स</string>
+    <string name="voice_assistant">वॉइस असिस्टेंट</string>
+    <string name="speak">बोलें</string>
+    <string name="send">भेजें</string>
+    <string name="search">खोजें</string>
+    <string name="query">अपना प्रश्न पूछें</string>
+</resources>
