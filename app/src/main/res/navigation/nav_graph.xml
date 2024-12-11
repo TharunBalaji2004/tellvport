@@ -24,9 +24,9 @@
         tools:layout="@layout/fragment_amenities" />
 
     <fragment
-        android:id="@+id/emergencyFragment"
-        android:name="com.ldihackos.tellvport.views.EmergencyFragment"
+        android:id="@+id/utilitiesFragment"
+        android:name="com.ldihackos.tellvport.views.UtilitiesFragment"
         android:label="Settings"
-        tools:layout="@layout/fragment_emergency" />
+        tools:layout="@layout/fragment_utilities" />
 
 </navigation>

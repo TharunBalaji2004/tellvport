@@ -38,6 +38,10 @@ class HomeActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
     }
 
+    fun getLanguage(): String {
+        return LanguagePref.getLanguage(this)
+    }
+
     fun updateLanguage(language: String) {
         LanguagePref.saveLanguage(this, language)
         recreate() // Recreate the activity to apply the new locale

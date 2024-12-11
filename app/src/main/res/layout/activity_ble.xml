@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:labelVisibilityMode="labeled"
-        app:itemTextColor="@color/bottom_nav_text_color"
-        app:itemIconTint="@color/bottom_nav_text_color"
-        app:menu="@menu/bottom_navigation_menu" />
+        android:padding="10sp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_start_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30sp"
+            android:backgroundTint="@color/primary_text"
+            android:textColor="@color/white"
+            android:text="START" />
+
+        <Button
+            android:id="@+id/btn_stop_scan"
+            android:backgroundTint="@color/primary_text"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="STOP" />
+
+    </LinearLayout>
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapFragment" />
 
 </LinearLayout>

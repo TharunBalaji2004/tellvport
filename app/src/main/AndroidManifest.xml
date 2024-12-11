@@ -64,6 +64,7 @@
         </activity>
 
         <activity android:name=".views.BLEActivity" android:exported="true" />
+        <activity android:name=".views.SensorActivity" android:exported="true" />
         <activity android:name=".views.SpeechActivity" android:exported="true" />
         <activity android:name=".views.HomeActivity" android:exported="true" />
     </application>

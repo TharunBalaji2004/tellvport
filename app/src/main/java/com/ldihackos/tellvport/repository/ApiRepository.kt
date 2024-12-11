@@ -30,12 +30,4 @@ class ApiRepository @Inject constructor(private val api: API) {
             _platformsLiveData.postValue(NetworkResult.Error("Something went wrong"))
         }
     }
-
-    private fun handleResponse(response: Response<PlatformsResponse>) {
-        if (response.isSuccessful && response.body() != null) {
-            _statusLiveData.postValue(NetworkResult.Success(response.body()!!.message))
-        } else {
-            _statusLiveData.postValue(NetworkResult.Error("Something went wrong"))
-        }
-    }
 }

@@ -1,151 +1,253 @@
 package com.ldihackos.tellvport.views
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.ldihackos.tellvport.databinding.ActivityBleBinding
-import org.altbeacon.beacon.*
+import dagger.hilt.android.AndroidEntryPoint
+import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
+import org.osmdroid.views.CustomZoomButtonsController
+import java.util.*
+import kotlin.math.abs
+import kotlinx.coroutines.*
+import java.util.LinkedList
+import java.util.Queue
 
-class BLEActivity : AppCompatActivity(), BeaconConsumer {
-    private lateinit var beaconManager: BeaconManager
-    private lateinit var beaconAdapter: ArrayAdapter<String>
-    private val beaconList = mutableListOf<String>()
-    private lateinit var binding: ActivityBleBinding
+@AndroidEntryPoint
+class BLEActivity : AppCompatActivity() {
 
-    companion object {
-        private const val PERMISSION_REQUEST_FINE_LOCATION = 1
-        private const val TAG = "BeaconScanner"
-    }
+    private var _binding: ActivityBleBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var bluetoothAdapter: BluetoothAdapter
+    private var bluetoothLeScanner: BluetoothLeScanner? = null
+    private var isScanning = false
+    private var userMarker: Marker? = null
+
+    private val INITIAL_ZOOM_LEVEL = 21.0
+    private val MAX_ZOOM_LEVEL = 22.0
+    private val MIN_ZOOM_LEVEL = 19.0
+
+    private lateinit var originalGeoPoint: GeoPoint
+
+    // Define a HashMap to store beacons
+    private val beaconMap: HashMap<String, Beacon> = hashMapOf(
+        "KBPro_469145" to Beacon(16.654441, 74.261921, -80),
+        "KBPro_469166" to Beacon(16.654250, 74.261924, -85),
+        "KBPro_469111" to Beacon(16.654363, 74.262109, -80)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBleBinding.inflate(layoutInflater)
+        _binding = ActivityBleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize UI
-//        beaconListView = findViewById(R.id.beaconListView)
-//        beaconAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, beaconList)
-//        beaconListView.adapter = beaconAdapter
+        // MAP CONFIGURATION
+        Configuration.getInstance().load(this, this.getSharedPreferences("osmdroid", 0))
+        binding.mapView.setMultiTouchControls(true)
+        binding.mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-        // Setup beacon manager
-        beaconManager = BeaconManager.getInstanceForApplication(this)
+        originalGeoPoint = GeoPoint(16.654222, 74.261795)
+        val mapController = binding.mapView.controller
+        mapController.setZoom(INITIAL_ZOOM_LEVEL)
+        mapController.setCenter(originalGeoPoint)
 
-        // Set beacon parser for different beacon types
-        beaconManager.beaconParsers.add(
-            BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
-        )
+        // Initialize marker
+        userMarker = Marker(binding.mapView)
+        userMarker?.position = originalGeoPoint
+        userMarker?.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        userMarker?.title = "You are here"
 
-        // Check and request permissions
-        checkLocationPermission()
+        binding.mapView.minZoomLevel = MIN_ZOOM_LEVEL
+        binding.mapView.maxZoomLevel = MAX_ZOOM_LEVEL
+
+
+        // Initialize Bluetooth Adapter
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothAdapter = bluetoothManager.adapter
+
+        if (!bluetoothAdapter.isEnabled) {
+            Toast.makeText(this, "Please enable Bluetooth", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+
+        binding.btnStartScan.setOnClickListener {
+            if (!isScanning) {
+                checkPermissionsAndStartScanning()
+            } else {
+                Toast.makeText(this, "Already scanning", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.btnStopScan.setOnClickListener {
+            if (isScanning) {
+                stopScanning()
+            } else {
+                Toast.makeText(this, "Not currently scanning", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun checkLocationPermission() {
-        val permissionCheck = ContextCompat.checkSelfPermission(
-            this@BLEActivity,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-        val permissionBluetoothCheck = ContextCompat.checkSelfPermission(
-            this@BLEActivity,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
+    private fun checkPermissionsAndStartScanning() {
+        val permissionsToRequest = mutableListOf<String>()
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED || permissionBluetoothCheck != PackageManager.PERMISSION_GRANTED) {
-            // ask permissions here using below code
-            ActivityCompat.requestPermissions(
-                this@BLEActivity,
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_SCAN),
-                PERMISSION_REQUEST_FINE_LOCATION
-            )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_SCAN)
+            }
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
         } else {
-            // Permission granted, start scanning
-            initializeBeaconScanning()
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
+            requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
+        } else {
+            startScanning()
         }
     }
 
-    private fun initializeBeaconScanning() {
-        try {
-            // Bind beacon service
-            beaconManager.bind(this)
-
-            // Configure scanning settings
-            beaconManager.foregroundScanPeriod = 5000
-            beaconManager.foregroundBetweenScanPeriod = 0
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing beacon scanning", e)
-            Toast.makeText(this, "Failed to start beacon scanning", Toast.LENGTH_SHORT).show()
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.all { it.value }) {
+                startScanning()
+            } else {
+                Toast.makeText(this, "Permissions denied. Cannot scan for BLE devices.", Toast.LENGTH_SHORT).show()
+            }
         }
+
+    private fun startScanning() {
+        if (isScanning) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Bluetooth Scan permission not granted", Toast.LENGTH_SHORT).show()
+                return
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        bluetoothLeScanner?.startScan(leScanCallback)
+        isScanning = true
+        Toast.makeText(this, "Scanning for BLE devices...", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onBeaconServiceConnect() {
-        // Setup a ranging listener to detect beacons
-        beaconManager.addRangeNotifier { beacons, region -> // Clear previous list
-            runOnUiThread {
-                beaconList.clear()
+    private fun stopScanning() {
+        if (!isScanning) return
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        bluetoothLeScanner?.stopScan(leScanCallback)
+        isScanning = false
+        Toast.makeText(this, "Scanning stopped.", Toast.LENGTH_SHORT).show()
+    }
+
+    private val leScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            super.onScanResult(callbackType, result)
+
+            val deviceName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ActivityCompat.checkSelfPermission(this@BLEActivity, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                    result.device.name ?: "Unknown Device"
+                } else {
+                    "Permission Required"
+                }
+            } else {
+                result.device.name ?: "Unknown Device"
             }
 
-            // Process detected beacons
-            beacons?.forEach { beacon ->
-                val beaconInfo = buildBeaconInfoString(beacon)
+            val rssi = result.rssi
+
+            if (beaconMap.containsKey(deviceName)) {
+                Log.d("BLE_SCAN", "$deviceName Found, RSSI: $rssi")
+
+                // Update the RSSI for the beacon in the map
+                val beacon = beaconMap[deviceName]?.copy(rssi = rssi)
+                beacon?.let {
+                    beaconMap[deviceName] = it
+                }
+
+                // Recalculate position
+                val currentPosition = calculatePosition(
+                    beaconMap.values.toList()
+                )
 
                 runOnUiThread {
-                    beaconList.add(beaconInfo)
-                    beaconAdapter.notifyDataSetChanged()
+                    // Update marker position with a focus on longitude
+                    val currentLatitude = userMarker?.position?.latitude ?: originalGeoPoint.latitude
+                    val newGeoPoint = GeoPoint(currentLatitude, currentPosition.second) // Only longitude changes
+                    userMarker?.let {
+                        it.position = newGeoPoint
+                        it.title = "Current Longitude: ${currentPosition.second}"
+                    }
+                    binding.mapView.overlays.add(userMarker)
+
+                    // Refresh map overlays
+                    binding.mapView.invalidate()
+
+                    // Center map on new position
+                    val mapController = binding.mapView.controller
+                    mapController.setCenter(newGeoPoint)
                 }
+
             }
-
-            // Log the number of beacons found
-            Log.d(TAG, "Beacons found: ${beacons?.size ?: 0}")
-        }
-
-        // Start ranging beacons in all regions
-        try {
-            beaconManager.startRangingBeaconsInRegion(Region("myRangingUniqueId", null, null, null))
-        } catch (e: Exception) {
-            Log.e(TAG, "Cannot start ranging", e)
         }
     }
 
-    private fun buildBeaconInfoString(beacon: Beacon): String {
-        return """
-            UUID: ${beacon.id1}
-            Major: ${beacon.id2}
-            Minor: ${beacon.id3}
-            RSSI: ${beacon.rssi} dBm
-            Distance: ${String.format("%.2f", beacon.distance)} m
-            Manufacturer: ${beacon.manufacturer}
-        """.trimIndent()
-    }
+    private fun calculatePosition(beacons: List<Beacon>): Pair<Double, Double> {
+        // Perform position calculation logic similar to the previous implementation
+        val validBeacons = beacons.filter { it.rssi < 0 && it.rssi > -100 }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_REQUEST_FINE_LOCATION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initializeBeaconScanning()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Location permission is required for beacon scanning",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        if (validBeacons.isEmpty()) {
+            return Pair(0.0, 0.0) // Default fallback
         }
+
+        val totalWeight = validBeacons.sumOf { 100 + it.rssi }.toDouble()
+        var weightedLat = 0.0
+        var weightedLon = 0.0
+
+        validBeacons.forEach { beacon ->
+            val weight = (100 + beacon.rssi) / totalWeight
+            weightedLat += beacon.latitude * weight
+            weightedLon += beacon.longitude * weight
+        }
+
+        return Pair(weightedLat, weightedLon)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Unbind from beacon service
-        beaconManager.unbind(this)
+        stopScanning()
     }
 }
+
+// Beacon class for storing beacon data (latitude, longitude, and RSSI)

@@ -5,7 +5,6 @@
     <color name="primary">#7BAB93</color>
     <color name="secondary">#F4F1DE</color>
     <color name="primary_text">#2F2F8F</color>
-    <color name="secondary_text">#E07A5F</color>
     <color name="background_tint">#FFFFFFFF</color>
     <color name="location_tint">#2F2F8F</color>
 </resources>

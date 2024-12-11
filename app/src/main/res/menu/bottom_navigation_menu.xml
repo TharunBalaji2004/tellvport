@@ -16,7 +16,7 @@
         android:icon="@drawable/baseline_fastfood_24"
         android:title="@string/tab_amenities"/>
     <item
-        android:id="@+id/emergencyFragment"
+        android:id="@+id/utilitiesFragment"
         android:enabled="true"
         android:icon="@drawable/baseline_health_and_safety_24"
         android:title="@string/tab_emergency"/>

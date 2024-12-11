@@ -15,7 +15,7 @@
         app:cardElevation="5sp"
         android:backgroundTint="@color/primary_text"
         android:theme="@style/Theme.MyApp"
-        android:layout_marginTop="50sp"
+        android:layout_marginTop="45sp"
         android:layout_marginHorizontal="20sp">
 
         <RelativeLayout
@@ -45,79 +45,374 @@
 
     </androidx.cardview.widget.CardView>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_below="@+id/header_title"
+        android:scrollbars="none"
         android:elevation="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="20sp"
-            android:layout_marginVertical="10sp"
-            android:backgroundTint="@color/background_tint"
-            app:cardCornerRadius="50sp"
-            android:layout_marginRight="5sp"
-            android:background="@color/white"
-            app:cardElevation="5sp">
+        <LinearLayout
+            android:elevation="10sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:padding="10sp">
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20sp"
+                android:layout_marginVertical="10sp"
+                android:backgroundTint="@color/background_tint"
+                app:cardCornerRadius="50sp"
+                android:layout_marginRight="5sp"
+                android:background="@color/white"
+                app:cardElevation="5sp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Chennai Central"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="10sp">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10sp"
+                        android:src="@drawable/baseline_directions_transit_24" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KIT College"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
 
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20sp"
-            android:layout_marginStart="10sp"
-            android:layout_marginVertical="10sp"
-            android:backgroundTint="@color/background_tint"
-            android:layout_marginLeft="5sp"
-            app:cardCornerRadius="50sp"
-            android:layout_weight="1"
-            android:background="@color/white"
-            app:cardElevation="5sp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:padding="10sp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:text="@string/app_header" />
-
-            </LinearLayout>
+                </LinearLayout>
 
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_foodcourts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10sp"
+                android:layout_marginVertical="10sp"
+                android:backgroundTint="@color/background_tint"
+                app:cardCornerRadius="50sp"
+                android:background="@color/white"
+                app:cardElevation="5sp">
 
-    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="10sp">
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10sp"
+                        android:src="@drawable/baseline_fastfood_24" />
+
+                    <TextView
+                        android:id="@+id/tv_bottomsheet_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:text="Food Courts" />
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10sp"
+                android:layout_marginVertical="10sp"
+                android:backgroundTint="@color/background_tint"
+                app:cardCornerRadius="50sp"
+                android:background="@color/white"
+                app:cardElevation="5sp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="10sp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10sp"
+                        android:src="@drawable/baseline_fastfood_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:text="Restroom" />
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20sp"
+                android:layout_marginStart="10sp"
+                android:layout_marginVertical="10sp"
+                android:backgroundTint="@color/background_tint"
+                app:cardCornerRadius="50sp"
+                android:background="@color/white"
+                app:cardElevation="5sp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="10sp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10sp"
+                        android:src="@drawable/baseline_fastfood_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:text="Restroom" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+
+    </HorizontalScrollView>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MapFragment" />
+        android:weightSum="1"
+        android:orientation="vertical">
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            tools:context=".MapFragment" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/ll_sheet"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="10sp"
+                    android:padding="10sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_centerInParent="true"
+                        android:text="FOOD COURTS" />
+
+                    <ImageButton
+                        android:id="@+id/btn_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/baseline_close_24" />
+
+                </RelativeLayout>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.cardview.widget.CardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:padding="15sp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textStyle="bold"
+                                        android:textSize="20sp"
+                                        android:textColor="@color/primary_text"
+                                        android:text="PLATFORM 1" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/black"
+                                        android:paddingTop="5sp"
+                                        android:textStyle="bold"
+                                        android:text="KOVAI EXPRESS (192893)" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:paddingTop="5sp"
+                                        android:text="MGR CHENNAI CENTRAL to KOVAI JUNCTION" />
+
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="15sp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/primary_text"
+                                    android:text="PLATFORM 1" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/black"
+                                    android:paddingTop="5sp"
+                                    android:textStyle="bold"
+                                    android:text="KOVAI EXPRESS (192893)" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingTop="5sp"
+                                    android:text="MGR CHENNAI CENTRAL to KOVAI JUNCTION" />
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="15sp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/primary_text"
+                                    android:text="PLATFORM 1" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/black"
+                                    android:paddingTop="5sp"
+                                    android:textStyle="bold"
+                                    android:text="KOVAI EXPRESS (192893)" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingTop="5sp"
+                                    android:text="MGR CHENNAI CENTRAL to KOVAI JUNCTION" />
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="15sp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    android:textColor="@color/primary_text"
+                                    android:text="PLATFORM 1" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/black"
+                                    android:paddingTop="5sp"
+                                    android:textStyle="bold"
+                                    android:text="KOVAI EXPRESS (192893)" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingTop="5sp"
+                                    android:text="MGR CHENNAI CENTRAL to KOVAI JUNCTION" />
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
+                </ScrollView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </LinearLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_sync"

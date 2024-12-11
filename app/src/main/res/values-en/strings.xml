@@ -7,7 +7,7 @@
     <string name="tab_map">Map</string>
     <string name="tab_platforms">Platforms</string>
     <string name="tab_amenities">Amenities</string>
-    <string name="tab_emergency">Emergency</string>
+    <string name="tab_emergency">Utilities</string>
     <string name="header_platforms">Platforms</string>
     <string name="voice_assistant">Voice Assistant</string>
     <string name="speak">Speak</string>
