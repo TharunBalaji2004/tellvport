@@ -74,8 +74,15 @@ dependencies {
 
     implementation ("org.altbeacon:android-beacon-library:2+")
     implementation ("org.osmdroid:osmdroid-android:6.1.14")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     implementation (libs.material.v190)
     implementation (libs.androidx.navigation.fragment.ktx.v273)
     implementation (libs.androidx.navigation.ui.ktx.v273)
+
+    implementation ("androidx.camera:camera-camera2:1.3.0")
+    implementation ("androidx.camera:camera-lifecycle:1.3.0")
+    implementation ("androidx.camera:camera-view:1.3.0")
+    implementation ("com.google.mlkit:barcode-scanning:17.2.0")
+
 }

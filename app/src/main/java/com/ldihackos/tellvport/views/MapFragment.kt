@@ -7,9 +7,13 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +23,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.ldihackos.tellvport.R
 import com.ldihackos.tellvport.databinding.FragmentMapBinding
@@ -31,6 +42,8 @@ import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polyline
+import java.util.HashMap
 
 class MapFragment : Fragment(R.layout.fragment_map), MapListener {
 
@@ -43,16 +56,20 @@ class MapFragment : Fragment(R.layout.fragment_map), MapListener {
 
     private var hasMapMoved = false
 
+    private var routeLine: Polyline? = null
+    private val destinationPoint = GeoPoint(16.654119, 74.262002)
+
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var isScanning = false
 
     private var userMarker: Marker? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val beaconMap: HashMap<String, Beacon> = hashMapOf(
-        "KBPro_469145" to Beacon(16.654441, 74.261921, -80),
-        "KBPro_469166" to Beacon(16.654250, 74.261924, -85),
-        "KBPro_469111" to Beacon(16.654363, 74.262109, -80)
+        "KBPro_469145" to Beacon(16.654348, 74.262050, -80),
+        "KBPro_469166" to Beacon(16.654327, 74.261972, -85),
+        "KBPro_469111" to Beacon(16.654327, 74.262026, -80)
     )
 
     override fun onCreateView(
@@ -69,6 +86,13 @@ class MapFragment : Fragment(R.layout.fragment_map), MapListener {
         // Load configuration settings
         val context = requireContext()
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", 0))
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+        binding.imgScanqr.setOnClickListener {
+            val intent = Intent(context, ScanqrActivity::class.java)
+            context.startActivity(intent)
+        }
 
         binding.imgChangeLang.setOnClickListener {
             val changeLang = when ((activity as HomeActivity).getLanguage()) {
@@ -233,7 +257,7 @@ class MapFragment : Fragment(R.layout.fragment_map), MapListener {
             }
         }
 
-        bluetoothLeScanner?.startScan(leScanCallback)
+        checkPermissions()
         isScanning = true
         Toast.makeText(requireContext(), "Scanning for BLE devices...", Toast.LENGTH_SHORT).show()
     }
@@ -244,9 +268,12 @@ class MapFragment : Fragment(R.layout.fragment_map), MapListener {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             return
         }
+
         bluetoothLeScanner?.stopScan(leScanCallback)
         isScanning = false
         //Toast.makeText(requireContext(), "Scanning stopped.", Toast.LENGTH_SHORT).show()
+
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     private val leScanCallback = object : ScanCallback() {
@@ -320,6 +347,69 @@ class MapFragment : Fragment(R.layout.fragment_map), MapListener {
         }
 
         return Pair(weightedLat, weightedLon)
+    }
+
+    private fun checkPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        if (permissions.all {
+                ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+            }) {
+            enableLocationUpdates()
+        } else {
+            requestPermissionsLauncher.launch(permissions)
+        }
+    }
+
+    private fun enableLocationUpdates() {
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, // Priority for high accuracy
+            500 // Update interval in milliseconds
+        ).apply {
+            setMinUpdateIntervalMillis(500) // Minimum interval between updates
+            setWaitForAccurateLocation(false) // Optional: Wait for accurate locations
+        }.build()
+
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED) {
+
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        }
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val location: Location = locationResult.lastLocation ?: return
+            updateUserLocation(location)
+        }
+    }
+
+    private fun updateUserLocation(location: Location) {
+        val userLocation = GeoPoint(location.latitude, location.longitude)
+        binding.mapView.controller.setCenter(userLocation)
+
+        // Add a marker for the user's location
+        val marker = Marker(binding.mapView)
+        marker.position = userLocation
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker.title = "Current Location"
+        binding.mapView.overlays.clear() // Clear old markers
+        binding.mapView.overlays.add(marker)
+        binding.mapView.invalidate()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+        _binding = null
     }
 }
 

@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10sp"
-        android:gravity="center">
+        android:padding="20sp">
 
         <Button
             android:id="@+id/btn_start_scan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="30sp"
-            android:backgroundTint="@color/primary_text"
-            android:textColor="@color/white"
-            android:text="START" />
+            android:text="Start" />
 
         <Button
             android:id="@+id/btn_stop_scan"
-            android:backgroundTint="@color/primary_text"
-            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="STOP" />
+            android:text="Stop" />
 
     </LinearLayout>
 
     <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MapFragment" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
